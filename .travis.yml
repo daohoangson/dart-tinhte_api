@@ -1,0 +1,14 @@
+language: dart
+
+dart:
+- stable
+- dev
+
+dart_task:
+- test
+- dartanalyzer
+- dartfmt
+
+cache:
+  directories:
+    - "$HOME/.pub-cache"
