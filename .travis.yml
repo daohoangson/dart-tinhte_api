@@ -1,14 +1,19 @@
 language: dart
 
-dart:
-- stable
-- dev
-
-dart_task:
-- test
-- dartanalyzer
-- dartfmt
+jobs:
+  include:
+    - name: dartfmt
+      script: dartfmt -n --set-exit-if-changed .
+    - name: dartanalyzer
+      script:
+        - ./tool/build.sh
+        - dartanalyzer --fatal-infos --fatal-warnings .
+    - name: test
+      script:
+        - ./tool/build.sh
+        - ./tool/test.sh
 
 cache:
   directories:
     - "$HOME/.pub-cache"
+    - .dart_tool/build
