@@ -12,32 +12,28 @@ void main() {
       api.close();
     });
 
-    test('deletes ok', () {
-      const url = 'https://httpbin.org/delete';
-      api
-          .deleteJson(url)
-          .then(expectAsync1((json) => expect(json['url'], equals(url))));
+    test('deletes ok', () async {
+      final url = 'https://httpbin.org/delete';
+      final json = await api.deleteJson(url);
+      expect(json['url'], equals(url));
     });
 
-    test('gets ok', () {
+    test('gets ok', () async {
       const url = 'https://httpbin.org/get';
-      api
-          .getJson(url)
-          .then(expectAsync1((json) => expect(json['url'], equals(url))));
+      final json = await api.getJson(url);
+      expect(json['url'], equals(url));
     });
 
-    test('posts ok', () {
+    test('posts ok', () async {
       const url = 'https://httpbin.org/post';
-      api
-          .postJson(url)
-          .then(expectAsync1((json) => expect(json['url'], equals(url))));
+      final json = await api.postJson(url);
+      expect(json['url'], equals(url));
     });
 
-    test('puts ok', () {
+    test('puts ok', () async {
       const url = 'https://httpbin.org/put';
-      api
-          .putJson(url)
-          .then(expectAsync1((json) => expect(json['url'], equals(url))));
+      final json = await api.putJson(url);
+      expect(json['url'], equals(url));
     });
   });
 }

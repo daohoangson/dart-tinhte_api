@@ -21,14 +21,14 @@ void main() {
     });
 
     group('grant_type=password', () {
-      test('works with username/password', () {
-        return api.login(username, password).then(
-            expectAsync1((OauthToken t) => expect(t.userId, equals(userId))));
+      test('works with username/password', () async {
+        final token = await api.login(username, password);
+        expect(token.userId, equals(userId));
       });
 
-      test('works with email/password', () {
-        return api.login(email, password).then(
-            expectAsync1((OauthToken t) => expect(t.userId, equals(userId))));
+      test('works with email/password', () async {
+        final token = await api.login(email, password);
+        expect(token.userId, equals(userId));
       });
 
       test('fails with wrong password', () {
@@ -37,12 +37,10 @@ void main() {
     });
 
     group('grant_type=refresh_token', () {
-      test('works', () {
-        return api
-            .login(username, password)
-            .then((OauthToken t) => api.refreshToken(t.refreshToken))
-            .then(expectAsync1(
-                (OauthToken t) => expect(t.userId, equals(userId))));
+      test('works', () async {
+        final loginToken = await api.login(username, password);
+        final refreshedToken = await api.refreshToken(loginToken.refreshToken);
+        expect(refreshedToken.userId, equals(userId));
       });
     });
   });
