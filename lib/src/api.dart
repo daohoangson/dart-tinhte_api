@@ -58,6 +58,16 @@ class Api {
     return OauthToken.fromJson(response);
   }
 
+  Future<dynamic> getJson(path, {checkError = true}) async {
+    final url = buildUrl(path);
+    _httpLatestResponse = await _httpClient.get(url, headers: _httpHeaders);
+    if (checkError) {
+      throwExceptionOnError(_httpLatestResponse);
+    }
+
+    return json.decode(_httpLatestResponse.body);
+  }
+
   Future<dynamic> postJson(path,
       {Map<String, String> body, checkError = true}) async {
     final url = buildUrl(path);
