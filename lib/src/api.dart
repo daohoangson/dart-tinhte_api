@@ -1,9 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
+import 'dart:async';
 import 'package:http/http.dart';
 
-import 'internal/http.dart';
 import 'model/oauth_token.dart';
+
+part 'internal/api.dart';
 
 class Api {
   final String _apiRoot;
@@ -12,7 +13,6 @@ class Api {
 
   final Client _httpClient = new Client();
   final Map<String, String> _httpHeaders = new Map();
-  Response _httpLatestResponse;
 
   Api(String apiRoot, this._clientId, this._clientSecret)
       : _apiRoot = apiRoot.replaceAll(new RegExp(r'/$'), '');
@@ -32,11 +32,11 @@ class Api {
   }
 
   Response getLatestResponse() {
-    return _httpLatestResponse;
+    return _latestResponse;
   }
 
   Future<OauthToken> login(String username, String password) async {
-    final response = await postJson('oauth/token', body: {
+    final json = await postJson('oauth/token', bodyFields: {
       "grant_type": "password",
       "client_id": _clientId,
       "client_secret": _clientSecret,
@@ -44,61 +44,42 @@ class Api {
       "password": password,
     });
 
-    return OauthToken.fromJson(response);
+    return OauthToken.fromJson(json);
   }
 
   Future<OauthToken> refreshToken(String refreshToken) async {
-    final response = await postJson('oauth/token', body: {
+    final json = await postJson('oauth/token', bodyFields: {
       "grant_type": "refresh_token",
       "client_id": _clientId,
       "client_secret": _clientSecret,
       "refresh_token": refreshToken,
     });
 
-    return OauthToken.fromJson(response);
+    return OauthToken.fromJson(json);
   }
 
-  Future<dynamic> deleteJson(path, {checkError = true}) async {
-    final url = buildUrl(path);
-    _httpLatestResponse = await _httpClient.delete(url, headers: _httpHeaders);
-    if (checkError) {
-      throwExceptionOnError(_httpLatestResponse);
-    }
-
-    return json.decode(_httpLatestResponse.body);
+  Future<dynamic> deleteJson(String path) {
+    return sendRequest("DELETE", path, parseJson: true);
   }
 
-  Future<dynamic> getJson(path, {checkError = true}) async {
-    final url = buildUrl(path);
-    _httpLatestResponse = await _httpClient.get(url, headers: _httpHeaders);
-    if (checkError) {
-      throwExceptionOnError(_httpLatestResponse);
-    }
-
-    return json.decode(_httpLatestResponse.body);
+  Future<dynamic> getJson(String path) {
+    return sendRequest("GET", path, parseJson: true);
   }
 
-  Future<dynamic> postJson(path,
-      {Map<String, String> body, checkError = true}) async {
-    final url = buildUrl(path);
-    _httpLatestResponse =
-        await _httpClient.post(url, body: body, headers: _httpHeaders);
-    if (checkError) {
-      throwExceptionOnError(_httpLatestResponse);
-    }
-
-    return json.decode(_httpLatestResponse.body);
+  Future<dynamic> postJson(String path, {Map<String, String> bodyFields}) {
+    return sendRequest("POST", path, bodyFields: bodyFields, parseJson: true);
   }
 
-  Future<dynamic> putJson(path,
-      {Map<String, String> body, checkError = true}) async {
-    final url = buildUrl(path);
-    _httpLatestResponse =
-        await _httpClient.put(url, body: body, headers: _httpHeaders);
-    if (checkError) {
-      throwExceptionOnError(_httpLatestResponse);
-    }
+  Future<dynamic> putJson(String path, {Map<String, String> bodyFields}) {
+    return sendRequest("PUT", path, bodyFields: bodyFields, parseJson: true);
+  }
 
-    return json.decode(_httpLatestResponse.body);
+  Future<dynamic> sendRequest(String method, String path,
+      {Map<String, String> bodyFields, String bodyJson, parseJson: false}) {
+    return _sendRequest(_httpClient, method, buildUrl(path),
+        bodyFields: bodyFields,
+        bodyJson: bodyJson,
+        headers: _httpHeaders,
+        parseJson: parseJson);
   }
 }
