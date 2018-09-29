@@ -58,6 +58,16 @@ class Api {
     return OauthToken.fromJson(response);
   }
 
+  Future<dynamic> deleteJson(path, {checkError = true}) async {
+    final url = buildUrl(path);
+    _httpLatestResponse = await _httpClient.delete(url, headers: _httpHeaders);
+    if (checkError) {
+      throwExceptionOnError(_httpLatestResponse);
+    }
+
+    return json.decode(_httpLatestResponse.body);
+  }
+
   Future<dynamic> getJson(path, {checkError = true}) async {
     final url = buildUrl(path);
     _httpLatestResponse = await _httpClient.get(url, headers: _httpHeaders);
@@ -73,6 +83,18 @@ class Api {
     final url = buildUrl(path);
     _httpLatestResponse =
         await _httpClient.post(url, body: body, headers: _httpHeaders);
+    if (checkError) {
+      throwExceptionOnError(_httpLatestResponse);
+    }
+
+    return json.decode(_httpLatestResponse.body);
+  }
+
+  Future<dynamic> putJson(path,
+      {Map<String, String> body, checkError = true}) async {
+    final url = buildUrl(path);
+    _httpLatestResponse =
+        await _httpClient.put(url, body: body, headers: _httpHeaders);
     if (checkError) {
       throwExceptionOnError(_httpLatestResponse);
     }
