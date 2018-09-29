@@ -1,14 +1,20 @@
 language: dart
 
+stages:
+  - lint
+  - test
+
 jobs:
   include:
     - name: dartfmt
+      stage: lint
       script: dartfmt -n --set-exit-if-changed .
     - name: dartanalyzer
+      stage: lint
       script:
         - ./tool/build.sh
         - dartanalyzer --fatal-infos --fatal-warnings .
-    - name: test
+    - stage: test
       script:
         - ./tool/build.sh
         - ./tool/test.sh
