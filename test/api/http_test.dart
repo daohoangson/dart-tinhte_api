@@ -4,13 +4,8 @@ import 'package:tinhte_api/tinhte_api.dart';
 void main() {
   group('http', () {
     Api api;
-    setUp(() {
-      api = new Api('', '', '');
-    });
-
-    tearDown(() {
-      api.close();
-    });
+    setUp(() => api = new Api('', '', ''));
+    tearDown(() => api.close());
 
     test('deletes ok', () async {
       final url = 'https://httpbin.org/delete';

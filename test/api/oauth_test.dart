@@ -11,14 +11,8 @@ void main() {
     const email = 'api-tester@xfrocks.com';
     const password = '@pi-T3st3r';
     const userId = 2394;
-
-    setUp(() {
-      api = new Api(apiRoot, clientId, clientSecret);
-    });
-
-    tearDown(() {
-      api.close();
-    });
+    setUp(() => api = new Api(apiRoot, clientId, clientSecret));
+    tearDown(() => api.close());
 
     group('grant_type=password', () {
       test('works with username/password', () async {

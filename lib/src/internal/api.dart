@@ -2,11 +2,14 @@ part of '../api.dart';
 
 Response _latestResponse = null;
 
-Future<dynamic> _sendRequest(Client client, String method, String url,
+int _requestCount = 0;
+
+Future _sendRequest(Client client, String method, String url,
     {Map<String, String> bodyFields,
     String bodyJson,
     Map<String, String> headers,
     bool parseJson}) async {
+  _requestCount++;
   final request = new Request(method, Uri.parse(url));
   if (headers != null) {
     request.headers.addAll(headers);
@@ -38,7 +41,7 @@ Response _throwExceptionOnError(Response response) {
     throw new Exception(j['error_description']);
   }
   if (j.containsKey('errors')) {
-    List<String> errors = j['errors'];
+    final errors = new List<String>.from(j['errors']);
     throw new Exception(errors.join(', '));
   }
 
